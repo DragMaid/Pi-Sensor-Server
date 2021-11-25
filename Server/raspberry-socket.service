@@ -1,0 +1,11 @@
+[Unit]
+Description='Sensor server socket'
+After=network-online.target
+
+[Service]
+User=pi
+WorkingDirectory=/home/pi
+ExecStart=/bin/python3 /home/pi/projects/door-bell/sensor.py
+
+[Install]
+WantedBy=multi-user.target
