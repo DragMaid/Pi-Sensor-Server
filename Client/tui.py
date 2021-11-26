@@ -1,10 +1,13 @@
 import npyscreen
 import curses
 from client import Client
+from threading import Thread
+from module import MultiLine
+import os
 
 class logPrompt(npyscreen.BoxTitle):
     name = 'Log'
-    _contained_widget = npyscreen.MultiLine
+    _contained_widget = MultiLine
 
 class commandPrompt(npyscreen.BoxTitle):
     name = 'Command'
@@ -16,9 +19,14 @@ class Form(npyscreen.FormBaseNew):
     valid_commands = ['start', 'stop', 'restart', 'exit', 'connect', 'disconnect', 'clear']
 
     def create(self):
+        self.setupLog()
+        self.setupPrompt()
         self.handlers.update({'^Q': self.handleError})
+
+    def setupLog(self):
         self.log = self.add(logPrompt, max_height=self.DEFAULT_LINES-3)
 
+    def setupPrompt(self):
         self.prompt = self.add(commandPrompt, max_height=3)
         self.prompt.entry_widget.label_widget.value = self.prompt.icon[0]
         self.prompt.entry_widget.text_field_begin_at = 3
@@ -32,16 +40,24 @@ class Form(npyscreen.FormBaseNew):
         self.processCommand(self.prompt.entry_widget.get_value())
         self.prompt.entry_widget.entry_widget.value = ''
 
-    def clearLog(self):
-        self.log.values.clear()
-        self.log.entry_widget.start_display_at = 0
-        self.log.update(clear=True)
+    def createThread(self, func, *args):
+        thread = Thread(target=func, args=args, daemon=True)
+        thread.start()
+
+    def clearLog(self, cache=False):
+        if cache:
+            self.log.entry_widget.clearLogFile()
+        self.log.entry_widget.clearValues()
 
     def notify(self, name, msg):
         message = f'{name}: {msg}'
+        if len(self.log.values) * self.log.entry_widget._contained_widget_height == self.log.entry_widget.height:
+            self.clearLog()
+            self.log.entry_widget._total_pages += 1
+            self.log.entry_widget._current_page+= 1
+        self.log.entry_widget._total_lines += 1
         self.log.values.append(message)
-        if len(self.log.values) * self.log.entry_widget._contained_widget_height > self.log.entry_widget.height:
-            self.log.entry_widget.start_display_at += 1 
+        self.log.entry_widget.writeLogFile(message)
         self.log.display()
 
     def send(self, command):
@@ -62,7 +78,7 @@ class Form(npyscreen.FormBaseNew):
                     controller.clientDisconnect()
 
                 elif command == 'clear':
-                    self.clearLog()
+                    self.clearLog(cache=True)
 
                 elif command == 'start':
                     self.send(command)

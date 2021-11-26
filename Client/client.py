@@ -18,7 +18,7 @@ BROWSER = 'firefox'
 class Client(Thread):
     client    = Client()
     ADDR      = str('http://')
-    IP        = str('192.168.0.112')
+    IP        = str('192.168.0.113') # This is my server's tatic IP
     PORT      = int(8080)
     URL       = str(f'{ADDR}{IP}:{PORT}')
     CONNECTED = False
@@ -66,11 +66,11 @@ class Client(Thread):
             except:
                 self.notify('Client', 'Problem occured while trying to execute command!')
 
-    def showNotification(self):
+    def showNotification(self, *args):
         play(SOUND)
         webbrowser.get(BROWSER).open(NOTIFICATION)
 
-    def createThread(self, func):
+    def createThread(self, func, *args):
         thread = Thread(target=func, args=(args,))
         thread.start()
 

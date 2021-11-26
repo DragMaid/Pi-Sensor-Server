@@ -21,14 +21,14 @@ class Sensor:
     def setupEnvTemp(self):
         sum = 0
         for x in range(15):
-            cal = self.amg.pixels[3][3]
+            cal = self.amg.pixels[4][4]
             if x > 5:
                 sum += cal 
                 sleep(0.1)
         self.AvTemp = sum / 9 
 
     def detect(self):
-        if self.amg.pixels[3][3] > self.AvTemp + self.Delta:
+        if self.amg.pixels[4][4] > self.AvTemp + self.Delta:
             return True
 
     async def setup(self):
