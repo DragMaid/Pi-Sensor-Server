@@ -1,13 +1,11 @@
-from npyscreen import wgwidget       as widget
-from npyscreen import wgtextbox      as textbox
+from npyscreen import wgwidget  as widget
+from npyscreen import wgtextbox as textbox
 import curses
 import copy
 import os
 
-
-
 DIRECTORY = os.path.dirname(os.path.abspath(__file__)) 
-logfile   = os.path.join(DIRECTORY, 'log,txt')
+logfile   = os.path.join(DIRECTORY, 'log.txt')
 
 class MultiLine(widget.Widget):
     """Display a list of items to the user.  By overloading the display_value method, this widget can be made to 

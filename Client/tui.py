@@ -1,8 +1,8 @@
+from client       import Client
+from threading    import Thread
+from customModule import MultiLine
 import npyscreen
 import curses
-from client import Client
-from threading import Thread
-from module import MultiLine
 import os
 
 class logPrompt(npyscreen.BoxTitle):
